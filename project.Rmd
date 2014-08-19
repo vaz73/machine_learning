@@ -1,0 +1,60 @@
+---
+title: "Developing a machine learning algorithm to predict activity quality"
+author: "Vasilis Nikolaou"
+date: "Monday, August 18, 2014"
+output: html_document
+---
+
+# Step 1
+
+First I load the training and testing data
+
+```{r, echo=TRUE}
+setwd("U:\\machine_learning")
+training<-read.csv("pml-training.csv")
+testing<-read.csv("pml-testing.csv")
+library(caret)
+```
+
+# Step 2
+
+I select only the accellerometer, gyrometer and magnetometer readings as well as the 'classe' variable for my training dataset. I do the same for the testing data
+```{r, echo=TRUE}
+training1<-with(training,data.frame(accel_belt_x,accel_belt_y,accel_belt_z,gyros_belt_x,gyros_belt_y,gyros_belt_z,magnet_belt_x,magnet_belt_y,magnet_belt_z,accel_arm_x,accel_arm_y,accel_arm_z,gyros_arm_x,gyros_arm_y,gyros_arm_z,magnet_arm_x,magnet_arm_y,magnet_arm_z,accel_dumbbell_x,accel_dumbbell_y,accel_dumbbell_z,gyros_dumbbell_x,gyros_dumbbell_y,gyros_dumbbell_z,magnet_dumbbell_x,magnet_dumbbell_y,magnet_dumbbell_z,accel_forearm_x,accel_forearm_y,accel_forearm_z,gyros_forearm_x,gyros_forearm_y,gyros_forearm_z,magnet_forearm_x,magnet_forearm_y,magnet_forearm_z,classe))
+```
+ 
+```{r,echo=FALSE}
+testing1<-with(testing,data.frame(accel_belt_x,accel_belt_y,accel_belt_z,gyros_belt_x,gyros_belt_y,gyros_belt_z,magnet_belt_x,magnet_belt_y,magnet_belt_z,accel_arm_x,accel_arm_y,accel_arm_z,gyros_arm_x,gyros_arm_y,gyros_arm_z,magnet_arm_x,magnet_arm_y,magnet_arm_z,accel_dumbbell_x,accel_dumbbell_y,accel_dumbbell_z,gyros_dumbbell_x,gyros_dumbbell_y,gyros_dumbbell_z,magnet_dumbbell_x,magnet_dumbbell_y,magnet_dumbbell_z,accel_forearm_x,accel_forearm_y,accel_forearm_z,gyros_forearm_x,gyros_forearm_y,gyros_forearm_z,magnet_forearm_x,magnet_forearm_y,magnet_forearm_z))
+```
+
+# Step 3
+
+For cross-validation I use bootstrap aggregating   which results to bagging classification trees with 25 bootstrap replications. 
+
+```{r}
+modFit<-train(training1$classe~.,method="treebag",data=training1)
+print(modFit$finalModel)
+```
+
+# Step 4
+
+I predict future values for my training set and assess the model's accuracy which is 99.9%!
+
+```{r}
+pred1<-predict(modFit,training1)
+confusionMatrix(training1$classe,pred1)
+```
+
+# Step 5
+
+I predict the 20 cases in the testing data with 100% accuracy!So in this case the  out of sample error is 0, although I was expecting to be higher than that of the in sample error (which is also almost zero). 
+
+```{r,results='hide'}
+pred1<-predict(modFit,testing1)
+pred1
+```
+
+# Conclusion
+
+The reasons I chose bagging for my prediction model are a) it was the only easy and straightforward cross-validation method I could use (I tried to use K-fold but I couldn't figure out how) and b) I tried to fit a simple tree model as well as a linear discriminant analysis model and a naive Bayes model but they were not as accurate
+
