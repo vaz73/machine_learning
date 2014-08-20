@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Machine learning by vaz73</title>
+    <title>Developing a machine learning algorithm to predict activity quality by vaz73</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -15,7 +15,7 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1>Machine learning</h1>
+        <h1>Developing a machine learning algorithm to predict activity quality</h1>
         <p></p>
 
         <p class="view"><a href="https://github.com/vaz73/machine_learning">View the Project on GitHub <small>vaz73/machine_learning</small></a></p>
@@ -28,67 +28,103 @@
         </ul>
       </header>
       <section>
-        <hr><p>title: "Developing a machine learning algorithm to predict activity quality"
-author: "Vasilis Nikolaou"
-date: "Wednesday, August 20, 2014"</p>
-
-<h2>
-<a name="output-html_document" class="anchor" href="#output-html_document"><span class="octicon octicon-link"></span></a>output: html_document</h2>
-
-<h1>
+        <h1>
 <a name="step-1" class="anchor" href="#step-1"><span class="octicon octicon-link"></span></a>Step 1</h1>
 
 <p>First I load the training and testing data</p>
 
-<pre lang="r,"><code>setwd("U:\\machine_learning")
-training&lt;-read.csv("pml-training.csv")
-testing&lt;-read.csv("pml-testing.csv")
-library(caret)
-</code></pre>
+<div class="highlight highlight-r"><pre><span class="kp">setwd</span><span class="p">(</span><span class="s">"U:\\machine_learning"</span><span class="p">)</span>
+training<span class="o">&lt;-</span>read.csv<span class="p">(</span><span class="s">"pml-training.csv"</span><span class="p">)</span>
+testing<span class="o">&lt;-</span>read.csv<span class="p">(</span><span class="s">"pml-testing.csv"</span><span class="p">)</span>
+<span class="kn">library</span><span class="p">(</span>caret<span class="p">)</span>
+</pre></div>
 
 <h1>
 <a name="step-2" class="anchor" href="#step-2"><span class="octicon octicon-link"></span></a>Step 2</h1>
 
-<p>I select only the accellerometer, gyrometer and magnetometer readings as well as the 'classe' variable for my training dataset. I do the same for the testing data</p>
+<p>I select only the accellerometer, gyrometer and magnetometer readings as well as the ‘classe’ variable for my training dataset. I do the same for the testing data</p>
 
-<pre lang="r,"><code>training1&lt;-with(training,data.frame(accel_belt_x,accel_belt_y,accel_belt_z,gyros_belt_x,gyros_belt_y,gyros_belt_z,magnet_belt_x,magnet_belt_y,magnet_belt_z,accel_arm_x,accel_arm_y,accel_arm_z,gyros_arm_x,gyros_arm_y,gyros_arm_z,magnet_arm_x,magnet_arm_y,magnet_arm_z,accel_dumbbell_x,accel_dumbbell_y,accel_dumbbell_z,gyros_dumbbell_x,gyros_dumbbell_y,gyros_dumbbell_z,magnet_dumbbell_x,magnet_dumbbell_y,magnet_dumbbell_z,accel_forearm_x,accel_forearm_y,accel_forearm_z,gyros_forearm_x,gyros_forearm_y,gyros_forearm_z,magnet_forearm_x,magnet_forearm_y,magnet_forearm_z,classe))
-</code></pre>
-
-<pre lang="r,echo=FALSE"><code>testing1&lt;-with(testing,data.frame(accel_belt_x,accel_belt_y,accel_belt_z,gyros_belt_x,gyros_belt_y,gyros_belt_z,magnet_belt_x,magnet_belt_y,magnet_belt_z,accel_arm_x,accel_arm_y,accel_arm_z,gyros_arm_x,gyros_arm_y,gyros_arm_z,magnet_arm_x,magnet_arm_y,magnet_arm_z,accel_dumbbell_x,accel_dumbbell_y,accel_dumbbell_z,gyros_dumbbell_x,gyros_dumbbell_y,gyros_dumbbell_z,magnet_dumbbell_x,magnet_dumbbell_y,magnet_dumbbell_z,accel_forearm_x,accel_forearm_y,accel_forearm_z,gyros_forearm_x,gyros_forearm_y,gyros_forearm_z,magnet_forearm_x,magnet_forearm_y,magnet_forearm_z))
-</code></pre>
+<div class="highlight highlight-r"><pre>training1<span class="o">&lt;-</span><span class="kp">with</span><span class="p">(</span>training<span class="p">,</span><span class="kt">data.frame</span><span class="p">(</span>accel_belt_x<span class="p">,</span>accel_belt_y<span class="p">,</span>
+accel_belt_z<span class="p">,</span>gyros_belt_x<span class="p">,</span>gyros_belt_y<span class="p">,</span>gyros_belt_z<span class="p">,</span>magnet_belt_x<span class="p">,</span>
+magnet_belt_y<span class="p">,</span>magnet_belt_z<span class="p">,</span>accel_arm_x<span class="p">,</span>accel_arm_y<span class="p">,</span>accel_arm_z<span class="p">,</span>
+gyros_arm_x<span class="p">,</span>gyros_arm_y<span class="p">,</span>gyros_arm_z<span class="p">,</span>magnet_arm_x<span class="p">,</span>magnet_arm_y<span class="p">,</span>
+magnet_arm_z<span class="p">,</span>accel_dumbbell_x<span class="p">,</span>accel_dumbbell_y<span class="p">,</span>accel_dumbbell_z<span class="p">,</span>
+gyros_dumbbell_x<span class="p">,</span>gyros_dumbbell_y<span class="p">,</span>gyros_dumbbell_z<span class="p">,</span>magnet_dumbbell_x<span class="p">,</span>
+magnet_dumbbell_y<span class="p">,</span>magnet_dumbbell_z<span class="p">,</span>accel_forearm_x<span class="p">,</span>accel_forearm_y<span class="p">,</span>
+accel_forearm_z<span class="p">,</span>gyros_forearm_x<span class="p">,</span>gyros_forearm_y<span class="p">,</span>gyros_forearm_z<span class="p">,</span>
+magnet_forearm_x<span class="p">,</span>magnet_forearm_y<span class="p">,</span>magnet_forearm_z<span class="p">,</span>classe<span class="p">))</span>
+</pre></div>
 
 <h1>
 <a name="step-3" class="anchor" href="#step-3"><span class="octicon octicon-link"></span></a>Step 3</h1>
 
-<p>For cross-validation I use bootstrap aggregating   which results to bagging classification trees with 25 bootstrap replications. </p>
+<p>For cross-validation I use bootstrap aggregating which results to bagging classification trees with 25 bootstrap replications.</p>
 
 <div class="highlight highlight-r"><pre><span class="kp">set.seed</span><span class="p">(</span><span class="m">12345</span><span class="p">)</span>
-modFit<span class="o">&lt;-</span>train<span class="p">(</span>training1<span class="o">$</span>classe<span class="o">~</span><span class="m">.</span><span class="p">,</span>method<span class="o">=</span><span class="s">"treebag"</span><span class="p">,</span>data<span class="o">=</span>training1<span class="p">,</span>trControl<span class="o">=</span>trainControl<span class="p">(</span>method<span class="o">=</span><span class="s">"cv"</span><span class="p">))</span>
-<span class="kp">print</span><span class="p">(</span>modFit<span class="o">$</span>finalModel<span class="p">)</span>
+ modFit<span class="o">&lt;-</span>train<span class="p">(</span>training1<span class="o">$</span>classe<span class="o">~</span><span class="m">.</span><span class="p">,</span>method<span class="o">=</span><span class="s">"treebag"</span><span class="p">,</span>data<span class="o">=</span>training1<span class="p">,</span>
+trControl<span class="o">=</span>trainControl<span class="p">(</span>method<span class="o">=</span><span class="s">"cv"</span><span class="p">))</span>
 </pre></div>
 
 <h1>
 <a name="step-4" class="anchor" href="#step-4"><span class="octicon octicon-link"></span></a>Step 4</h1>
 
-<p>I predict future values for my training set and assess the model's accuracy from the confusion matrix. It appears from the confusion matrix that the error rate is very small (close to zero)</p>
+<p>I predict future values for my training set and assess the model’s accuracy from the confusion matrix. It appears from the confusion matrix that the error rate is very small (close to zero)</p>
 
 <div class="highlight highlight-r"><pre>pred1<span class="o">&lt;-</span>predict<span class="p">(</span>modFit<span class="p">,</span>training1<span class="p">)</span>
 confusionMatrix<span class="p">(</span>training1<span class="o">$</span>classe<span class="p">,</span>pred1<span class="p">)</span>
 </pre></div>
 
+<div class="highlight highlight-r"><pre> Confusion Matrix and Statistics
+
+           Reference
+Prediction    A    B    C    D    E
+          A <span class="m">5580</span>    <span class="m">0</span>    <span class="m">0</span>    <span class="m">0</span>    <span class="m">0</span>
+          B    <span class="m">0</span> <span class="m">3796</span>    <span class="m">1</span>    <span class="m">0</span>    <span class="m">0</span>
+          C    <span class="m">0</span>    <span class="m">0</span> <span class="m">3422</span>    <span class="m">0</span>    <span class="m">0</span>
+          D    <span class="m">0</span>    <span class="m">0</span>    <span class="m">3</span> <span class="m">3213</span>    <span class="m">0</span>
+          E    <span class="m">0</span>    <span class="m">0</span>    <span class="m">0</span>    <span class="m">0</span> <span class="m">3607</span>
+
+Overall Statistics
+
+                Accuracy <span class="o">:</span> <span class="m">1</span>         
+                 <span class="m">95</span>% CI <span class="o">:</span> <span class="p">(</span><span class="m">0.999</span><span class="p">,</span> <span class="m">1</span><span class="p">)</span>
+     No Information Rate <span class="o">:</span> <span class="m">0.284</span>     
+     P<span class="o">-</span>Value <span class="p">[</span>Acc <span class="o">&gt;</span> NIR<span class="p">]</span> <span class="o">:</span> <span class="o">&lt;</span><span class="m">2e-16</span>    
+
+                   Kappa <span class="o">:</span> <span class="m">1</span>         
+  Mcnemar<span class="s">'</span><span class="err">s Test P-Value : NA        </span>
+
+ Statistics by Class<span class="o">:</span>
+
+                      Class<span class="o">:</span> A Class<span class="o">:</span> B Class<span class="o">:</span> C Class<span class="o">:</span> D Class<span class="o">:</span> E
+ Sensitivity             <span class="m">1.000</span>    <span class="m">1.000</span>    <span class="m">0.999</span>    <span class="m">1.000</span>    <span class="m">1.000</span>
+ Specificity             <span class="m">1.000</span>    <span class="m">1.000</span>    <span class="m">1.000</span>    <span class="m">1.000</span>    <span class="m">1.000</span>
+ Pos Pred Value          <span class="m">1.000</span>    <span class="m">1.000</span>    <span class="m">1.000</span>    <span class="m">0.999</span>    <span class="m">1.000</span>
+ Neg Pred Value          <span class="m">1.000</span>    <span class="m">1.000</span>    <span class="m">1.000</span>    <span class="m">1.000</span>    <span class="m">1.000</span>
+ Prevalence              <span class="m">0.284</span>    <span class="m">0.193</span>    <span class="m">0.175</span>    <span class="m">0.164</span>    <span class="m">0.184</span>
+ Detection Rate          <span class="m">0.284</span>    <span class="m">0.193</span>    <span class="m">0.174</span>    <span class="m">0.164</span>    <span class="m">0.184</span>
+ Detection Prevalence    <span class="m">0.284</span>    <span class="m">0.194</span>    <span class="m">0.174</span>    <span class="m">0.164</span>    <span class="m">0.184</span>
+ Balanced Accuracy       <span class="m">1.000</span>    <span class="m">1.000</span>    <span class="m">0.999</span>    <span class="m">1.000</span>    <span class="m">1.000</span>
+
+</pre></div>
+
 <h1>
 <a name="step-5" class="anchor" href="#step-5"><span class="octicon octicon-link"></span></a>Step 5</h1>
 
-<p>I predict future values for the testing set. I would expect the error on the testing set to be bigger than that of the training set. </p>
+<p>I predict future values for the testing set. I would expect the error on the testing set to be bigger than that of the training set.</p>
 
 <div class="highlight highlight-r"><pre>pred2<span class="o">&lt;-</span>predict<span class="p">(</span>modFit<span class="p">,</span>testing1<span class="p">)</span>
 pred2
 </pre></div>
 
+<div class="highlight highlight-r"><pre>  <span class="p">[</span><span class="m">1</span><span class="p">]</span> B A B A A E D B A A B C B A E E A B B B
+ Levels<span class="o">:</span> A B C D E
+</pre></div>
+
 <h1>
 <a name="conclusion" class="anchor" href="#conclusion"><span class="octicon octicon-link"></span></a>Conclusion</h1>
 
-<p>The reasons I chose bagging for my prediction model are a) it was the only easy and straightforward cross-validation method I could use (I tried to use K-fold but I couldn't figure out how) and b) I tried different models(a simple tree, a linear discriminant and a naive Bayes model)but they were not as accurate as the bagging ones. Moreover, 'bagging' results to similar bias and reduced variance which makes me feel more confident about my choise.</p>
+<p>The reasons I chose bagging for my prediction model are a) it was the only easy and straightforward cross-validation method I could use (I tried to use K-fold but I couldn’t figure out how) and b) I tried different models(a simple tree, a linear discriminant and a naive Bayes model)but they were not as accurate as the bagging ones. Moreover, ‘bagging’ results to similar bias and reduced variance which makes me feel more confident about my choise.</p>
       </section>
       <footer>
         <p>This project is maintained by <a href="https://github.com/vaz73">vaz73</a></p>
