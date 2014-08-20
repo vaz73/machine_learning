@@ -1,7 +1,7 @@
 ---
 title: "Developing a machine learning algorithm to predict activity quality"
 author: "Vasilis Nikolaou"
-date: "Monday, August 18, 2014"
+date: "Wednesday, August 20, 2014"
 output: html_document
 ---
 
@@ -32,29 +32,31 @@ testing1<-with(testing,data.frame(accel_belt_x,accel_belt_y,accel_belt_z,gyros_b
 For cross-validation I use bootstrap aggregating   which results to bagging classification trees with 25 bootstrap replications. 
 
 ```{r}
-modFit<-train(training1$classe~.,method="treebag",data=training1)
+set.seed(12345)
+modFit<-train(training1$classe~.,method="treebag",data=training1,trControl=trainControl(method="cv"))
 print(modFit$finalModel)
 ```
 
 # Step 4
 
-I predict future values for my training set and assess the model's accuracy which is 99.9%!
+I predict future values for my training set and assess the model's accuracy from the confusion matrix. It appears from the confusion matrix that the error rate is very small (close to zero)
 
 ```{r}
 pred1<-predict(modFit,training1)
 confusionMatrix(training1$classe,pred1)
 ```
 
+
 # Step 5
 
-I predict the 20 cases in the testing data with 100% accuracy!So in this case the  out of sample error is 0, although I was expecting to be higher than that of the in sample error (which is also almost zero). 
+I predict future values for the testing set. I would expect the error on the testing set to be bigger than that of the training set. 
 
-```{r,results='hide'}
-pred1<-predict(modFit,testing1)
-pred1
+```{r}
+pred2<-predict(modFit,testing1)
+pred2
 ```
 
 # Conclusion
 
-The reasons I chose bagging for my prediction model are a) it was the only easy and straightforward cross-validation method I could use (I tried to use K-fold but I couldn't figure out how) and b) I tried to fit a simple tree model as well as a linear discriminant analysis model and a naive Bayes model but they were not as accurate
+The reasons I chose bagging for my prediction model are a) it was the only easy and straightforward cross-validation method I could use (I tried to use K-fold but I couldn't figure out how) and b) I tried different models(a simple tree, a linear discriminant and a naive Bayes model)but they were not as accurate as the bagging ones. Moreover, 'bagging' results to similar bias and reduced variance which makes me feel more confident about my choise.
 
